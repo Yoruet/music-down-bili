@@ -1,5 +1,5 @@
 import os
-
+import imageio
 def check_folder():
     if not os.path.exists('./bilibili_music') == True:
         os.makedirs('./bilibili_music')
@@ -11,3 +11,4 @@ def check_folder():
 
 if __name__ == '__main__':
     check_folder()
+    imageio.plugins.ffmpeg.download()

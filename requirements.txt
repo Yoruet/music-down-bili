@@ -1,5 +1,5 @@
 eyed3
 requests
-moviepy
+moviepy==0.2.3.2
 ffmpeg-python==0.2.0
 imageio==2.4.1
