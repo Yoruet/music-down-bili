@@ -29,15 +29,15 @@ class List(Process):
         pn = re.findall(r'(?<=pn=)[0-9]*',self.url)[0]
         elements = ['title', 'cover', 'bvid']
         try:
-            len_vedios = len(res['data']['medias'])
-            for j in range(len_vedios):
-                vedio = {}
+            len_videos = len(res['data']['medias'])
+            for j in range(len_videos):
+                video = {}
                 for k in elements:
-                    vedio[k] = res['data']['medias'][j][k]
-                vedio['link'] = Bv2Av.bv2av(vedio['bvid'])
-                vedio['pn'] = pn
+                    video[k] = res['data']['medias'][j][k]
+                video['link'] = Bv2Av.bv2av(video['bvid'])
+                video['pn'] = pn
                 # print(vedio,'\n')
-                self.q.put(vedio)
+                self.q.put(video)
                 # print(q.get())
         except:return
 
