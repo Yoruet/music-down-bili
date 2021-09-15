@@ -24,15 +24,15 @@ def get_list(fid):
         pn = re.findall(r'(?<=pn=)[0-9]*',url)[0]
         elements = ['title', 'cover', 'bvid']
         try:
-            len_vedios = len(res['data']['medias'])
-            for j in range(len_vedios):
-                vedio = {}
+            len_videos = len(res['data']['medias'])
+            for j in range(len_videos):
+                video = {}
                 for k in elements:
-                    vedio[k] = res['data']['medias'][j][k]
-                vedio['link'] = Bv2Av.bv2av(vedio['bvid'])
-                vedio['pn'] = pn
+                    video[k] = res['data']['medias'][j][k]
+                video['link'] = Bv2Av.bv2av(video['bvid'])
+                video['pn'] = pn
                 # print(vedio,'\n')
-                list.append(vedio)
+                list.append(video)
                 # print(q.get())
         except:return list
     return list
