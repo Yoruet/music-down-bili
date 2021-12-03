@@ -14,7 +14,10 @@ __author__ = 'Henry'
 '''
 
 import requests, time, hashlib, urllib.request, re, json
-from moviepy.editor import *
+from moviepy.audio.io.AudioFileClip import AudioFileClip
+from moviepy.video.io.VideoFileClip import VideoFileClip
+from moviepy.video.VideoClip import ImageClip
+from moviepy.video.compositing.CompositeVideoClip import CompositeVideoClip
 import os, sys, threading
 import signal
 import imageio
@@ -26,6 +29,11 @@ S = threading.Semaphore(5)
 
 # 正在下载的视频
 currentPage = []
+
+if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(sys.executable)
+elif __file__:
+    application_path = os.path.dirname(__file__)
 
 # 清屏函数
 def Clear():
@@ -79,7 +87,6 @@ def callbackfunc(blocknum, blocksize, totalsize):
     @totalsize: 远程文件的大小
 '''
 
-
 def Schedule_cmd(title, page):
     start_time = time.time()
     def Schedule(blocknum, blocksize, totalsize):
@@ -96,6 +103,11 @@ def Schedule_cmd(title, page):
         percent_str = "%.2f%%" % (percent * 100)
         n = round(percent * 50)
         s = ('#' * n).ljust(50, '-')
+        f = sys.stdout
+        f.write(percent_str.ljust(8, ' ') + '[' + s + ']' + speed_str + '\0')
+        f.flush()
+        f.write('\r')
+
     return Schedule
 
 
@@ -121,7 +133,8 @@ def format_size(bytes):
 def down_video(video_list, title, start_url, page):
     S.acquire()
     num = 1
-    currentVideoPath = os.path.join(sys.path[0], 'bilibili_video', title) # 当前目录作为下载目录
+    # print('[正在下载P{}段视频,请稍等...]:'.format(page) + title)
+    currentVideoPath = os.path.join(application_path, 'bilibili_video', title) # 当前目录作为下载目录
     if not os.path.exists(currentVideoPath):
         os.makedirs(currentVideoPath)
     for i in video_list:
@@ -155,7 +168,7 @@ def down_video(video_list, title, start_url, page):
 
 # 合并视频(20190802新版)
 def combine_video(title_list):
-    video_path = os.path.join(sys.path[0], 'bilibili_video')  # 下载目录
+    video_path = os.path.join(application_path, 'bilibili_video')  # 下载目录
     for title in title_list:
         current_video_path = os.path.join(video_path ,title)
         if len(os.listdir(current_video_path)) >= 2:
@@ -174,7 +187,7 @@ def combine_video(title_list):
                     # 添加到数组
                     L.append(video)
             # 拼接视频
-            final_clip = concatenate_videoclips(L)
+            final_clip = imageio.concatenate_videoclips(L)
             # 生成目标视频文件
             final_clip.to_videofile(os.path.join(current_video_path, r'{}.mp4'.format(title)), fps=24, remove_temp=False)
             # print('[视频合并完成]' + title)
@@ -239,7 +252,7 @@ def main(start, quality='80'):
     print('done ' + start)
     end_time = time.time()  # 结束时间
     # 如果是windows系统，下载完成后打开下载目录
-    currentVideoPath = os.path.join(sys.path[0], 'bilibili_video')  # 当前目录作为下载目录
+    currentVideoPath = os.path.join(application_path, 'bilibili_video')  # 当前目录作为下载目录
     if (sys.platform.startswith('win')):
         os.startfile(currentVideoPath)
     return title_list[0]
